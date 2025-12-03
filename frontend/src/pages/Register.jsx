@@ -1,8 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import InputField from "../components/InputField";
-import AuthContext from "../contexts/AuthContext";
-import { validateRegisterForm } from "../utils/formValidators";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Register = () => {
   const { register } = useContext(AuthContext);
@@ -12,42 +10,56 @@ const Register = () => {
     name: "",
     email: "",
     address: "",
-    password: ""
+    password: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
 
-  const updateForm = (field, value) => {
+  const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const validation = validateRegisterForm(form);
-    if (!validation.valid) {
-      setErrors(validation.errors);
-      return;
-    }
+    setError("");
 
     try {
-      await register(form); // form is an object
+      await register(form);
+      alert("Registered successfully!");
       navigate("/login");
     } catch (err) {
-      setErrors({ general: err.response?.data?.message || "Registration failed" });
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
     <div className="auth-container">
       <h2>Register</h2>
-      <form onSubmit={handleRegister} className="auth-form">
-        <InputField label="Name" value={form.name} onChange={(v) => updateForm("name", v)} error={errors.name} />
-        <InputField label="Email" type="email" value={form.email} onChange={(v) => updateForm("email", v)} error={errors.email} />
-        <InputField label="Address" value={form.address} onChange={(v) => updateForm("address", v)} error={errors.address} />
-        <InputField label="Password" type="password" value={form.password} onChange={(v) => updateForm("password", v)} error={errors.password} />
-        {errors.general && <p className="error">{errors.general}</p>}
-        <button className="btn-primary" type="submit">Create Account</button>
+      <form onSubmit={handleSubmit} className="auth-form">
+        <input
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+        />
+        <input
+          placeholder="Address"
+          value={form.address}
+          onChange={(e) => handleChange("address", e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={(e) => handleChange("password", e.target.value)}
+        />
+        {error && <p className="error">{error}</p>}
+        <button type="submit">Register</button>
       </form>
     </div>
   );

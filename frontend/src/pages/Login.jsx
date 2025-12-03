@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
-import useAuth from "../hooks/useAuth";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      await login(email, password);
-      navigate("/");
+      await login({ email, password });
+      navigate("/"); // Redirect to homepage on success
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
@@ -27,13 +27,13 @@ const Login = () => {
     <div className="auth-container">
       <h2>Login</h2>
 
-      <form onSubmit={handleLogin} className="auth-form">
+      <form onSubmit={handleSubmit} className="auth-form">
         <InputField
           label="Email"
           type="email"
           value={email}
           placeholder="Enter email"
-          onChange={setEmail}
+          onChange={(value) => setEmail(value)}
         />
 
         <InputField
@@ -41,7 +41,7 @@ const Login = () => {
           type="password"
           value={password}
           placeholder="Enter password"
-          onChange={setPassword}
+          onChange={(value) => setPassword(value)}
         />
 
         {error && <p className="error">{error}</p>}

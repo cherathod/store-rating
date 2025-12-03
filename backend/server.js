@@ -11,8 +11,10 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
+// MIDDLEWARE
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ROUTES
 app.use("/api/auth", authRoutes);
@@ -20,16 +22,16 @@ app.use("/api/users", userRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-// ERROR MIDDLEWARE
+// ERROR HANDLER
 app.use(errorHandler);
 
 // START SERVER
 sequelize
-    .sync()
-    .then(() => {
-        console.log("Database connected.");
-        app.listen(5000, () => console.log("Server running on port 5000"));
-    })
-    .catch((err) => {
-        console.error("Database connection failed:", err);
-    });
+  .sync()
+  .then(() => {
+    console.log("Database connected.");
+    app.listen(5000, () => console.log("Server running on port 5000"));
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err);
+  });
